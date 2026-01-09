@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curve Fitter Pro</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Controls -->
+        <aside class="sidebar glass-panel">
+            <h1 class="logo">Curve Fitter <span class="accent">Pro</span></h1>
+
+            <!-- Configuration Removed -->
+
+            <div class="control-group">
+                <h3>Fitting Method</h3>
+                <!-- Visual Fit Selector -->
+                <div class="fit-selector-container" id="fitSelector">
+                    <button class="fit-option active" data-value="optimal" title="Optimal (Auto-Best)">
+                        <svg class="fit-icon" viewBox="0 0 24 24">
+                            <path d="M22 12l-4-4v3H3v2h15v3z M2 12l4 4v-3h15v-2H6v-3z" fill="currentColor" />
+                        </svg>
+                        <span>Optimal</span>
+                    </button>
+                    <button class="fit-option" data-value="linear" title="Linear">
+                        <svg class="fit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="4" y1="20" x2="20" y2="4" />
+                        </svg>
+                        <span>Linear</span>
+                    </button>
+                    <button class="fit-option" data-value="exponential" title="Exponential">
+                        <svg class="fit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 20c0 0 10 0 16-16" />
+                        </svg>
+                        <span>Curve Up</span>
+                    </button>
+                    <button class="fit-option" data-value="logarithmic" title="Logarithmic">
+                        <svg class="fit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 20c0 0 4-10 16-10" />
+                        </svg>
+                        <span>Curve Down</span>
+                    </button>
+                    <button class="fit-option" data-value="saturation" title="Saturation">
+                        <svg class="fit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 20c5-10 10-10 16-10" />
+                        </svg>
+                        <span>Plateau</span>
+                    </button>
+                </div>
+                <!-- Hidden select for state compatibility if needed, but we'll update JS to separate this -->
+                <input type="hidden" id="fitTypeInput" value="optimal">
+            </div>
+
+            <div class="control-group">
+                <h3>Data Points</h3>
+                <div class="input-row add-point-row">
+                    <input type="number" id="inputX" placeholder="X" step="any">
+                    <input type="number" id="inputY" placeholder="Y" step="any">
+                    <button id="addBtn" class="btn-primary">+</button>
+                </div>
+                <div class="data-list-container custom-scrollbar">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>X</th>
+                                <th>Y</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataBody">
+                            <!-- Rows added dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="stats-panel">
+                    <div class="stat-item">
+                        <span class="label">Equation:</span>
+                        <span class="value" id="equationDisplay">y = ...</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">R² Score:</span>
+                        <span class="value" id="r2Display">0.000</span>
+                    </div>
+                </div>
+            </div>
+            <!-- A4 Scaling Calculator -->
+            <!-- A4 Scaling Calculator -->
+            <details class="control-group glass-panel-details" open>
+                <summary>
+                    <h3>📏 Paper Scaling / A4</h3>
+                </summary>
+                <div class="details-content">
+                    <p class="section-hint">Configure scale for real-world paper.</p>
+
+                    <div class="control-group">
+                        <div class="mode-selection">
+                            <label class="radio-label">
+                                <input type="radio" name="scaleMode" value="auto" checked>
+                                <span>✨ Auto A4 Fit</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="scaleMode" value="custom">
+                                <span>🛠️ Custom Scale</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group-label">Axis Start</div>
+                    <div class="input-row two-col">
+                        <input type="number" id="axisStartX" placeholder="Start X (Auto)">
+                        <input type="number" id="axisStartY" placeholder="Start Y (Auto)">
+                    </div>
+
+                    <!-- Custom Scale Section (Hidden by default via JS/CSS) -->
+                    <div id="customScaleSection" style="display: none;">
+                        <div class="input-group-label">Custom Scale (Units per cm)</div>
+                        <div class="input-row two-col">
+                            <input type="number" id="customScaleX" placeholder="X Units/cm" step="any">
+                            <input type="number" id="customScaleY" placeholder="Y Units/cm" step="any">
+                        </div>
+                    </div>
+
+                    <!-- Auto Scale Section -->
+                    <div id="autoScaleSection" class="scale-display glass-panel">
+                        <div class="scale-mode">
+                            <span class="mode-label">Landscape (26x16cm)</span>
+                            <div id="scaleLandscape" class="scale-values">--</div>
+                        </div>
+                        <div class="scale-mode">
+                            <span class="mode-label">Portrait (16x26cm)</span>
+                            <div id="scalePortrait" class="scale-values">--</div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <div class="control-group actions">
+                <button id="clearBtn" class="btn-secondary">Clear All</button>
+            </div>
+        </aside>
+
+        <!-- Main Graph Area -->
+        <main class="main-content">
+            <div class="graph-container glass-panel">
+                <div class="graph-paper-bg"></div>
+                <canvas id="curveChart"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
