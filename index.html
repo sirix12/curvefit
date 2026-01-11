@@ -116,6 +116,33 @@
                         </div>
                     </div>
 
+                    <!-- Orientation Selection -->
+                    <div class="control-group orientation-group">
+                        <div class="input-group-label">Orientation</div>
+                        <div class="orientation-selection">
+                            <label class="orientation-label">
+                                <input type="radio" name="orientation" value="landscape" checked>
+                                <span class="orientation-btn">
+                                    <svg class="orientation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="2" y="5" width="20" height="14" rx="2" />
+                                    </svg>
+                                    <span>Landscape</span>
+                                </span>
+                            </label>
+                            <label class="orientation-label">
+                                <input type="radio" name="orientation" value="portrait">
+                                <span class="orientation-btn">
+                                    <svg class="orientation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="5" y="2" width="14" height="20" rx="2" />
+                                    </svg>
+                                    <span>Portrait</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="input-group-label">Axis Start</div>
                     <div class="input-row two-col">
                         <input type="number" id="axisStartX" placeholder="Start X (Auto)">
@@ -133,12 +160,12 @@
 
                     <!-- Auto Scale Section -->
                     <div id="autoScaleSection" class="scale-display glass-panel">
-                        <div class="scale-mode">
-                            <span class="mode-label">Landscape (26x16cm)</span>
+                        <div class="scale-mode" id="scaleLandscapeContainer" data-selected="true">
+                            <span class="mode-label">🖼️ Landscape (26×16cm)</span>
                             <div id="scaleLandscape" class="scale-values">--</div>
                         </div>
-                        <div class="scale-mode">
-                            <span class="mode-label">Portrait (16x26cm)</span>
+                        <div class="scale-mode" id="scalePortraitContainer">
+                            <span class="mode-label">📄 Portrait (16×26cm)</span>
                             <div id="scalePortrait" class="scale-values">--</div>
                         </div>
                     </div>
