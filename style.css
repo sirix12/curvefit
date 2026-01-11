@@ -414,12 +414,6 @@ canvas {
     color: var(--text-main);
 }
 
-
-/* Details / Summary */
-.glass-panel-details {
-    /* reuse control-group margin/flex */
-}
-
 summary {
     cursor: pointer;
     list-style: none;
@@ -477,4 +471,91 @@ details[open] summary:after {
     color: var(--text-muted);
     font-style: italic;
     opacity: 0.7;
+}
+
+/* Orientation Selection */
+.orientation-group {
+    margin-top: 0.5rem;
+}
+
+.orientation-selection {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.orientation-label {
+    flex: 1;
+    cursor: pointer;
+}
+
+.orientation-label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.orientation-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.6rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.orientation-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.orientation-label input:checked+.orientation-btn {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+}
+
+.orientation-icon {
+    width: 22px;
+    height: 22px;
+    opacity: 0.8;
+}
+
+.orientation-label input:checked+.orientation-btn .orientation-icon {
+    opacity: 1;
+}
+
+/* Scale Display - Selected Orientation Highlight */
+.scale-mode {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.scale-mode[data-selected="true"] {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+}
+
+.scale-mode[data-selected="true"] .mode-label {
+    color: var(--accent);
+}
+
+.scale-mode[data-selected="true"] .scale-values {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.scale-mode[data-selected="false"] {
+    opacity: 0.6;
 }
