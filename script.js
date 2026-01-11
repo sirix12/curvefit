@@ -29,6 +29,8 @@ const els = {
     customScaleY: document.getElementById('customScaleY'),
     scaleLandscape: document.getElementById('scaleLandscape'),
     scalePortrait: document.getElementById('scalePortrait'),
+    scaleLandscapeContainer: document.getElementById('scaleLandscapeContainer'),
+    scalePortraitContainer: document.getElementById('scalePortraitContainer'),
     equationDisplay: document.getElementById('equationDisplay'),
     r2Display: document.getElementById('r2Display'),
     ctx: document.getElementById('curveChart').getContext('2d')
@@ -314,21 +316,27 @@ function initChart() {
                                 if (state.lastScale) {
                                     let sX, sY, startX, startY;
                                     const mode = state.lastScale.mode;
+                                    const orientation = state.lastScale.orientation;
 
                                     if (mode === 'custom' && state.lastScale.custom.active) {
                                         sX = state.lastScale.custom.xPerCm;
                                         sY = state.lastScale.custom.yPerCm;
                                         startX = state.lastScale.custom.startX;
                                         startY = state.lastScale.custom.startY;
-                                        lines.push(`Distance (Custom):`);
+                                        const orientLabel = orientation === 'landscape' ? 'Landscape' : 'Portrait';
+                                        lines.push(`Distance (Custom - ${orientLabel}):`);
                                     } else {
-                                        // Default to Landscape for Auto
-                                        if (state.lastScale.landscape) {
-                                            sX = state.lastScale.landscape.xPerCm;
-                                            sY = state.lastScale.landscape.yPerCm;
-                                            startX = state.lastScale.landscape.startX;
-                                            startY = state.lastScale.landscape.startY;
-                                            lines.push(`Distance (A4 Landscape):`);
+                                        // Use selected orientation for Auto
+                                        const scaleData = orientation === 'landscape'
+                                            ? state.lastScale.landscape
+                                            : state.lastScale.portrait;
+                                        if (scaleData) {
+                                            sX = scaleData.xPerCm;
+                                            sY = scaleData.yPerCm;
+                                            startX = scaleData.startX;
+                                            startY = scaleData.startY;
+                                            const orientLabel = orientation === 'landscape' ? 'Landscape' : 'Portrait';
+                                            lines.push(`Distance (A4 ${orientLabel}):`);
                                         }
                                     }
 
@@ -451,6 +459,10 @@ function updateCalculation() {
     const modeEl = document.querySelector('input[name="scaleMode"]:checked');
     const mode = modeEl ? modeEl.value : 'auto';
 
+    // Orientation Check
+    const orientationEl = document.querySelector('input[name="orientation"]:checked');
+    const orientation = orientationEl ? orientationEl.value : 'landscape';
+
     // Toggle Visibility
     if (mode === 'custom') {
         els.customScaleSection.style.display = 'block';
@@ -458,6 +470,15 @@ function updateCalculation() {
     } else {
         els.customScaleSection.style.display = 'none';
         els.autoScaleSection.style.display = 'block';
+    }
+
+    // Update visual selection for orientation in auto mode
+    if (orientation === 'landscape') {
+        els.scaleLandscapeContainer.dataset.selected = 'true';
+        els.scalePortraitContainer.dataset.selected = 'false';
+    } else {
+        els.scaleLandscapeContainer.dataset.selected = 'false';
+        els.scalePortraitContainer.dataset.selected = 'true';
     }
 
     // Custom Scales
@@ -470,6 +491,7 @@ function updateCalculation() {
 
     state.lastScale = {
         mode: mode,
+        orientation: orientation,
         landscape: land,
         portrait: port,
         custom: hasCustom ? {
@@ -560,8 +582,13 @@ els.axisStartY.addEventListener('input', updateCalculation);
 els.customScaleX.addEventListener('input', updateCalculation);
 els.customScaleY.addEventListener('input', updateCalculation);
 
-// Radio Listener
+// Radio Listener for Scale Mode
 document.querySelectorAll('input[name="scaleMode"]').forEach(radio => {
+    radio.addEventListener('change', updateCalculation);
+});
+
+// Radio Listener for Orientation
+document.querySelectorAll('input[name="orientation"]').forEach(radio => {
     radio.addEventListener('change', updateCalculation);
 });
 
